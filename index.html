@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NEON TEST WEB</title>
+  <style>
+    body {
+      background-color: #000000;
+      color: #00fff7;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 3em;
+      color: #00fff7;
+      text-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7;
+      margin-bottom: 20px;
+    }
+
+    .glass-card {
+      background: rgba(0, 255, 247, 0.05);
+      border: 1px solid #00fff7;
+      border-radius: 20px;
+      padding: 30px 50px;
+      box-shadow: 0 0 30px #00fff7aa;
+      text-align: center;
+      min-width: 300px;
+    }
+
+    .label {
+      font-size: 1.2em;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .period, .prediction {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .big {
+      color: #00ff00;
+      text-shadow: 0 0 10px #00ff00;
+    }
+
+    .small {
+      color: #ff0055;
+      text-shadow: 0 0 10px #ff0055;
+    }
+
+    .numbers {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>NEON TEST WEB</h1>
+  <div class="glass-card">
+    <div class="label">Period</div>
+    <div id="period" class="period">Loading...</div>
+
+    <div class="label">Prediction</div>
+    <div id="prediction" class="prediction">--</div>
+    <div id="numbers" class="numbers">--/--</div>
+  </div>
+
+  <script>
+    let currentPeriod = "";
+
+    function getRandomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generatePrediction() {
+      const isBig = Math.random() < 0.5;
+      const type = isBig ? "Big" : "Small";
+      const pool = isBig ? [5, 6, 7, 8, 9] : [0, 1, 2, 3, 4];
+
+      let n1 = getRandomFrom(pool);
+      let n2;
+      do {
+        n2 = getRandomFrom(pool);
+      } while (n2 === n1);
+
+      return { type, n1, n2 };
+    }
+
+    function updatePeriodAndPrediction() {
+      const now = new Date();
+      const ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+      const hours = ist.getUTCHours();
+      const minutes = ist.getUTCMinutes();
+      const totalMinutes = hours * 60 + minutes;
+      const periodNum = 10001 + (totalMinutes - 330);
+      const date = ist.toISOString().slice(0, 10).replace(/-/g, "");
+      const periodCode = `${date}1000${periodNum}`;
+      document.getElementById("period").innerText = periodCode;
+
+      if (currentPeriod !== periodCode) {
+        currentPeriod = periodCode;
+
+        const prediction = generatePrediction();
+
+        document.getElementById("prediction").innerHTML =
+          `<span class="${prediction.type.toLowerCase()}">${prediction.type}</span>`;
+        document.getElementById("numbers").innerText = `${prediction.n1} / ${prediction.n2}`;
+      }
+    }
+
+    updatePeriodAndPrediction();
+    setInterval(updatePeriodAndPrediction, 1000);
+  </script>
+</body>
+</html>
